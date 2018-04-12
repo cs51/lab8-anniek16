@@ -220,7 +220,7 @@ Exercise 8: Create a new event called publish to signal that all
 stories should be published. The event should be a unit WEvent.event.
 ......................................................................*)
 
-let publish = fun _ -> failwith "publish not implemented" ;;
+let publish : unit WEvent.new_event = WEvent.new_event ;;
 
 (*......................................................................
 Exercise 9: Write a function receive_report to handle new news
@@ -231,14 +231,15 @@ by registering appropriate listeners, one for each news network,
 waiting for the publish event.
 ......................................................................*)
 
-let receive_report = fun _ -> failwith "report not implemented";;
+let receive_report (s : string) : () =
+    let _ = WEvent.add_listener publish (fun () -> buzzFake s) in ();;
 
 (*......................................................................
 Exercise 10: Register the receieve_report listener to listen for the
 newswire event.
 ......................................................................*)
 
-(* .. *)
+let _ = WEvent.add_listener newswire receive_report;;
 
 (* Here are some new headlines to use for testing this part. *)
 
@@ -246,6 +247,9 @@ let h4 = "today's top story: memes." ;;
 let h5 = "you can lose 20 pounds in 20 minutes!" ;;
 let h6 = "sheep have wool, not hair." ;;
 
+let _ = receive_report h4;;
+let _ = receive_report h5;;
+let _ = receive_report h6;;
 (*......................................................................
 Exercise 11: Fire newswire events for these headlines. Notice that (if
 properly implemented), the newswire event doesn't immediately print
@@ -253,7 +257,9 @@ the news. (They've just queued up a bunch of listeners on the publish
 event instead.)
 ......................................................................*)
 
-(* .. *)
+let _ = WEvent.fire_event newswire h4;;
+let _ = WEvent.fire_event newswire h5;;
+let _ = WEvent.fire_event newswire h6;;
 
 print_string "Moved to publication.\n" ;;
 
@@ -263,4 +269,4 @@ out the headlines. You should see the headlines printed after
 the line above.
 ......................................................................*)
 
-(* .. *)
+let _ = WEvent.fire_event publish ();;
